@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>HubSpot Page Printer</title>
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-default/index.css">
+		<link rel="stylesheet" href="https://necolas.github.io/normalize.css/5.0.0/normalize.css">
+	</head>
+
+	<style media="screen">
+		main { margin: 48px; }
+		#json {
+			padding: 24px;
+			background-color: rgba(0,0,0,0.10);
+			border-radius: 3px;
+		}
+		#json div {
+			font-family: monospace;
+			font-size: 14px;
+		}
+		#json div:not(:last-child) { margin-bottom: 8px; }
+		.el-row { margin-bottom: 8px; }
+	</style>
+
+	<body>
+		<main id="app">
+			<el-row>
+				<el-col :xs="24" :sm="16" :md="12" :lg="8">
+					<el-form ref="form" :model="form" label-width="120px" label-position="top">
+						<el-form-item label="HAPI Key">
+							<el-input placeholder="Enter HAPI Key" v-model="form.hapiKey"></el-input>
+						</el-form-item>
+						<el-form-item label="Subcategory">
+							<el-select v-model="form.subcategory" placeholder="please select your zone">
+								<el-option label="Landing Page" value="landing_page"></el-option>
+								<el-option label="Site Page" value="site_page"></el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="Include Drafts?">
+							<el-switch on-text="" off-text="" v-model="form.draft"></el-switch>
+						</el-form-item>
+						<el-form-item>
+							<el-button type="primary" :loading="loadingButton" @click="printJSON(form.hapiKey, form.subcategory, form.draft)">Print JSON</el-button>
+						</el-form-item>
+					</el-form>
+				</el-col>
+			</el-row>
+			<el-row>
+				<div id="json"></div>
+			</el-row>
+		</main>
+	</body>
+
+	<!-- <script src="https://unpkg.com/vue/dist/vue.js"></script> -->
+	<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<script src="https://unpkg.com/jquery@3.1.1/dist/jquery.min.js"></script>
+	<script>		
+		// Init Vue
+		new Vue({
+			el: '#app',
+			data: function () {
+				return {
+					form: {
+						hapiKey: '',
+						subcategory: 'site_page',
+						draft: false
+					},
+					loadingButton: false,
+					printJSON(a, b, c) {
+						$("#json div").remove();
+						$.getJSON('https://api.hubapi.com/content/api/v2/pages?hapikey=' + a + '&subcategory=' + b + '&is_draft=' + c + '&limit=1000', function(data) {
+							for (i = 0; i < data.total_count; i++) {
+								$("#json").append("<div>" + data.objects[i].url + "," + data.objects[i].name + "," + data.objects[i].campaign_name + "</div>");
+							}
+						})
+						.done(function () {
+							console.log('Done');
+						})
+						.fail(function () {
+							console.log('Request Failed');
+						});
+					}
+				}
+			}
+		});
+	</script>
+</html>
