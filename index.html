@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<!-- BROWSER -->
 		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- PAGE -->
 		<title>HubSpot Page Printer</title>
-		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-default/index.css">
+		<meta name="author" content="Jeff Reiner">
+		<meta name="description" content="Helps you get a list of all your HubSpot COS pages">
+		<!-- STYLES -->
 		<link rel="stylesheet" href="https://necolas.github.io/normalize.css/5.0.0/normalize.css">
+		<!-- FAVICONS -->
+		<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+		<link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/favicon/manifest.json">
+		<link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#f7751f">
+		<link rel="shortcut icon" href="/favicon/favicon.ico">
+		<meta name="msapplication-config" content="/favicon/browserconfig.xml">
+		<meta name="theme-color" content="#f7751f">
 	</head>
 
 	<style media="screen">
-		main { margin: 48px; }
+		main {
+			margin: 48px;
+			color: rgba(0,0,0,0.87)
+		}
+		form { margin: 32px 0; }
+		form .field label {
+			color: rgba(0,0,0,0.54);
+			font-size: 14px;
+			display: block;
+			margin-bottom: 8px;
+		}
+		form .field { margin-bottom: 16px; }
+		form .field.submit {
+			margin-top: 16px;
+			margin-bottom: 0;
+		}
 		#json {
 			padding: 24px;
 			background-color: rgba(0,0,0,0.10);
@@ -19,41 +49,36 @@
 			font-size: 14px;
 		}
 		#json div:not(:last-child) { margin-bottom: 8px; }
-		.el-row { margin-bottom: 8px; }
 	</style>
 
 	<body>
 		<main id="app">
-			<el-row>
-				<el-col :xs="24" :sm="16" :md="12" :lg="8">
-					<el-form ref="form" :model="form" label-width="120px" label-position="top">
-						<el-form-item label="HAPI Key">
-							<el-input placeholder="Enter HAPI Key" v-model="form.hapiKey"></el-input>
-						</el-form-item>
-						<el-form-item label="Subcategory">
-							<el-select v-model="form.subcategory" placeholder="please select your zone">
-								<el-option label="Landing Page" value="landing_page"></el-option>
-								<el-option label="Site Page" value="site_page"></el-option>
-							</el-select>
-						</el-form-item>
-						<el-form-item label="Include Drafts?">
-							<el-switch on-text="" off-text="" v-model="form.draft"></el-switch>
-						</el-form-item>
-						<el-form-item>
-							<el-button type="primary" :loading="loadingButton" @click="printJSON(form.hapiKey, form.subcategory, form.draft)">Print JSON</el-button>
-						</el-form-item>
-					</el-form>
-				</el-col>
-			</el-row>
-			<el-row>
-				<div id="json"></div>
-			</el-row>
+			<form class="form">
+				<div class="field">
+					<label for="hapiKey">HubSpot API Key</label>
+					<input id="hapiKey" placeholder="Enter Key" v-model="form.hapiKey">
+				</div>
+				<div class="field">
+					<label for="subcategory">HubSpot Page Subcategory</label>
+					<select id="subcategory" v-model="form.subcategory">
+						<option value="landing_page">Landing Page</option>
+						<option value="site_page">Site Page</option>
+					</select>
+				</div>
+				<div class="field">
+					<label for="checkbox">Include Drafts?</label>
+					<input type="checkbox" id="checkbox" v-model="form.draft"> {{ form.draft }}
+				</div>
+				<div class="field submit">
+					<button @click="printJSON(form.hapiKey, form.subcategory, form.draft)">Print JSON</button>
+				</div>
+			</form>
+			<div id="json"></div>
 		</main>
 	</body>
 
 	<!-- <script src="https://unpkg.com/vue/dist/vue.js"></script> -->
 	<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
-	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
 	<script src="https://unpkg.com/jquery@3.1.1/dist/jquery.min.js"></script>
 	<script>		
 		// Init Vue
