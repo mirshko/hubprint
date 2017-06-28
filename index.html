@@ -2,88 +2,129 @@
 <html>
 	<head>
 		<!-- BROWSER -->
-		<meta charset="utf-8">
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
 		<!-- PAGE -->
 		<title>HubSpot Page Printer</title>
-		<meta name="author" content="Jeff Reiner">
-		<meta name="description" content="Helps you get a list of all your HubSpot COS pages">
+		<meta name="author" content="Jeff Reiner"/>
+		<meta name="description" content="Helps you get a list of all your HubSpot COS pages"/>
+
 		<!-- STYLES -->
-		<link rel="stylesheet" href="https://necolas.github.io/normalize.css/5.0.0/normalize.css">
+		<link rel="stylesheet" href="https://unpkg.com/spectre.css@0.2.14/dist/spectre.min.css"/>
+
 		<!-- FAVICONS -->
-		<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
-		<link rel="icon" type="image/png" href="favicon/favicon-32x32.png" sizes="32x32">
-		<link rel="icon" type="image/png" href="favicon/favicon-16x16.png" sizes="16x16">
-		<link rel="manifest" href="favicon/manifest.json">
-		<link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#f7751f">
-		<link rel="shortcut icon" href="favicon/favicon.ico">
-		<meta name="msapplication-config" content="/favicon/browserconfig.xml">
-		<meta name="theme-color" content="#f7751f">
+		<link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png"/>
+		<link rel="icon" type="image/png" href="favicon/favicon-32x32.png" sizes="32x32"/>
+		<link rel="icon" type="image/png" href="favicon/favicon-16x16.png" sizes="16x16"/>
+		<link rel="manifest" href="favicon/manifest.json"/>
+		<link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#f7751f"/>
+		<link rel="shortcut icon" href="favicon/favicon.ico"/>
+		<meta name="msapplication-config" content="/favicon/browserconfig.xml"/>
+		<meta name="theme-color" content="#f7751f"/>
 	</head>
 
 	<style media="screen">
+		.form-input,
+		.form-select {
+			width: 320px;
+			max-width: 100%;
+		}
 		main {
-			margin: 48px;
-			color: rgba(0,0,0,0.87)
+			margin: 5rem;
 		}
-		form { margin: 32px 0; }
-		form .field label {
-			color: rgba(0,0,0,0.54);
-			font-size: 14px;
+		@media only screen and (max-width: 768px) {
+			main {
+				margin: 2rem;
+			}
+		}
+		@media only screen and (max-width: 320px) {
+			main {
+				margin: 1rem;
+			}
+		}
+		.json {
+			margin-top: 5rem;
+		    background: #f8f9fa;
+			color: inherit;
 			display: block;
-			margin-bottom: 8px;
+			line-height: inherit;
+			overflow-x: auto;
+			padding: 3rem;
+			width: 100%;
+			border-radius: 2px;
 		}
-		form .field { margin-bottom: 16px; }
-		form .field.submit {
-			margin-top: 16px;
-			margin-bottom: 0;
-		}
-		#json {
-			padding: 24px;
-			background-color: rgba(0,0,0,0.10);
-			border-radius: 3px;
-		}
-		#json div {
+		.json div {
 			font-family: monospace;
-			font-size: 14px;
 		}
-		#json div:not(:last-child) { margin-bottom: 8px; }
+		.json div:not(:last-child) { margin-bottom: .8rem; }
 	</style>
 
 	<body>
 		<main id="app">
-			<form class="form">
-				<div class="field">
-					<label for="hapiKey">HubSpot API Key</label>
-					<input id="hapiKey" placeholder="Enter Key" v-model="form.hapiKey">
+			<div class="container">
+				<div>
+					<div class="form-group">
+						<label for="hapiKey" class="form-label">HubSpot API Key</label>
+						<input id="hapiKey" class="form-input" type="text" placeholder="HAPI Key" v-model="form.hapiKey">
+					</div>
+					<div class="form-group">
+						<label for="form-select" class="form-label">HubSpot Page Subcategory</label>
+					    <select class="form-select">
+					      <option value="landing_page">Landing Page</option>
+							<option value="site_page">Site Page</option>
+					    </select>
+					  </div>
+					<div class="form-group" style="margin-bottom: 2rem;">
+						<label class="form-switch">
+							<input type="checkbox" v-model="form.draft"/>
+							<i class="form-icon"></i>Include Draft Pages
+						</label>
+				  	</div>
+					<div class="form-group">
+						<a class="btn btn-primary" @click="printJSON()">FETCH MY PAGES</a>
+					</div>
 				</div>
-				<div class="field">
-					<label for="subcategory">HubSpot Page Subcategory</label>
-					<select id="subcategory" v-model="form.subcategory">
-						<option value="landing_page">Landing Page</option>
-						<option value="site_page">Site Page</option>
-					</select>
-				</div>
-				<div class="field">
-					<label for="checkbox">Include Drafts?</label>
-					<input type="checkbox" id="checkbox" v-model="form.draft"> {{ form.draft }}
-				</div>
-				<div class="field submit">
-					<button @click="printJSON(form.hapiKey, form.subcategory, form.draft)">Print JSON</button>
-				</div>
-			</form>
-			<div id="json"></div>
+				<div class="json" v-html="print"></div>
+			</div>
 		</main>
 	</body>
 
-	<!-- <script src="https://unpkg.com/vue/dist/vue.js"></script> -->
 	<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
-	<script src="https://unpkg.com/jquery@3.1.1/dist/jquery.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script>		
-		// Init Vue
 		new Vue({
 			el: '#app',
+			methods: {
+				printJSON () {
+					// VARS
+					const key = this.form.hapiKey;
+					const draft = this.form.draft;
+					const subcategory = this.form.subcategory;
+					const limit = 100;
+
+					// REMOVE PREVIOUS PRINT
+					this.print = '';
+
+					axios.get(`https://api.hubapi.com/content/api/v2/pages?hapikey=${key}&subcategory=${subcategory}&is_draft=${draft}&limit=${limit}`)
+						.then((res) => {
+							const payload = res.data.objects;
+							for (let i = 0; i < payload.length; i++) {
+							    const name = payload[i].name;
+							    const campaign = payload[i].campaign_name;
+							    const url = payload[i].url;
+							    let template = payload[i].template_path;
+							    
+								this.print += `<div>${name}, ${campaign}, ${url}, ${template}</div>`
+						    }
+						})
+						.catch((error) => {
+						    var err = error.response;
+							this.print = `${err.statusText} (${err.status}): ${err.data.message}`;
+						});
+				}
+			},
 			data: function () {
 				return {
 					form: {
@@ -91,21 +132,7 @@
 						subcategory: 'site_page',
 						draft: false
 					},
-					loadingButton: false,
-					printJSON(a, b, c) {
-						$("#json div").remove();
-						$.getJSON('https://api.hubapi.com/content/api/v2/pages?hapikey=' + a + '&subcategory=' + b + '&is_draft=' + c + '&limit=1000', function(data) {
-							for (i = 0; i < data.total_count; i++) {
-								$("#json").append("<div>" + data.objects[i].url + "," + data.objects[i].name + "," + data.objects[i].campaign_name + "</div>");
-							}
-						})
-						.done(function () {
-							console.log('Done');
-						})
-						.fail(function () {
-							console.log('Request Failed');
-						});
-					}
+					print: ''
 				}
 			}
 		});
