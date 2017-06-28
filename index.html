@@ -107,7 +107,7 @@
 					// REMOVE PREVIOUS PRINT
 					this.print = '';
 
-					axios.get(`https://api.hubapi.com/content/api/v2/pages?hapikey=${key}&subcategory=${subcategory}&is_draft=${draft}&limit=${limit}`)
+					axios.get(`https://cors.io/?https://api.hubapi.com/content/api/v2/pages?hapikey=${key}&subcategory=${subcategory}&is_draft=${draft}&limit=${limit}`)
 						.then((res) => {
 							const payload = res.data.objects;
 							for (let i = 0; i < payload.length; i++) {
@@ -121,7 +121,7 @@
 						})
 						.catch((error) => {
 						    var err = error.response;
-							this.print = `${err.statusText} (${err.status}): ${err.data.message}`;
+						    this.print = `${err.statusText} (${err.status}): ${err.data.message}`;
 						});
 				}
 			},
