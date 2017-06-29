@@ -111,7 +111,7 @@
           // REMOVE PREVIOUS PRINT
           this.print = '';
           
-          axios.post('https://hubprint-server-dwouyuqwzm.now.sh/printer', {
+          axios.post('/api', {
               hapikey: key,
               subcategory: subcategory,
               draft: draft,
