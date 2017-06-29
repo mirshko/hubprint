@@ -64,7 +64,7 @@
 	<body>
 		<main id="app">
 			<div class="container">
-				<div>
+				<form netlify>
 					<div class="form-group">
 						<label for="hapiKey" class="form-label">HubSpot API Key</label>
 						<input id="hapiKey" class="form-input" type="text" placeholder="HAPI Key" v-model="form.hapiKey">
@@ -89,7 +89,7 @@
 					<div class="form-group">
 						<a class="btn btn-primary" @click="printJSON()">FETCH MY PAGES</a>
 					</div>
-				</div>
+				</form>
 				<div class="json" v-html="print"></div>
 			</div>
 		</main>
