@@ -97,7 +97,7 @@
 
   <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script>		
+  <script>
     new Vue({
       el: '#app',
       methods: {
@@ -110,8 +110,8 @@
 
           // REMOVE PREVIOUS PRINT
           this.print = '';
-          
-          axios.post('/api', {
+
+          axios.post('https://hubprint.now.sh/api/', {
               hapikey: key,
               subcategory: subcategory,
               draft: draft,
@@ -119,9 +119,11 @@
             })
             .then(function (response) {
               console.log(response);
+              this.print = response;
             })
             .catch(function (error) {
               console.log(error);
+              this.print = error;
             });
 
           // axios.post(``)
@@ -133,7 +135,7 @@
           //     //     const campaign = payload[i].campaign_name;
           //     //     const url = payload[i].url;
           //     //     let template = payload[i].template_path;
-          //     //     
+          //     //
           //     // 	this.print += `<div>${name}, ${campaign}, ${url}, ${template}</div>`
           //     // }
           //   })

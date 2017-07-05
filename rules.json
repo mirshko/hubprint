@@ -1,7 +1,7 @@
 {
   "rules": [
-    { "pathname": "/api/*", "dest": "hubprint-server-ipacewwymj.now.sh" },
-    { "pathname": "/**", "dest": "hubprint-kiergtoyom.now.sh" },
+    { "pathname": "/api", "dest": "hubprint-server-wbjxfdgyjc.now.sh" },
+    { "pathname": "/", "dest": "hubprint-euidfsgqqz.now.sh" },
     { "dest": "www.hubprint.now.sh" }
   ]
 }
