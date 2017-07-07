@@ -23,6 +23,8 @@
     <link rel="shortcut icon" href="favicon/favicon.ico"/>
     <meta name="msapplication-config" content="/favicon/browserconfig.xml"/>
     <meta name="theme-color" content="#f7751f"/>
+    
+    {{ standard_header_includes }}
   </head>
 
   <style media="screen">
@@ -71,7 +73,7 @@
           </div>
           <div class="form-group">
             <label for="form-select" class="form-label">Page Subcategory</label>
-            <select class="form-select">
+            <select class="form-select" v-model="form.subcategory">
               <option value="landing_page">Landing Page</option>
               <option value="site_page">Site Page</option>
             </select>
@@ -87,73 +89,68 @@
             </label>
           </div>
           <div class="form-group">
-            <a class="btn btn-primary" @click="printJSON()">FETCH MY PAGES</a>
+            <a class="btn btn-primary" :class="{ loading: isLoading }" @click="printJSON()">FETCH MY PAGES</a>
           </div>
         </div>
-        <div class="json" v-html="print"></div>
+        <div class="json">
+          <div v-for="page in pages"><$page.id$>, <$page.name$>, <$page.campaign_name$>, <$page.url$>, <$page.template_path$></div>
+        </div>
+        <div style="padding: 24px;">
+          <div v-text="error.message"></div>
+        </div>
       </div>
     </main>
+    
+    {{ standard_footer_includes }}
+    
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>		
+      new Vue({
+        delimiters: ['<$', '$>'],
+        el: '#app',
+        data: function () {
+          return {
+            form: {
+              hapiKey: '',
+              subcategory: 'site_page',
+              draft: false,
+              limit: 100
+            },
+            isLoading: false,
+            pages: [],
+            error: []
+          }
+        },
+        methods: {
+          printJSON () {
+            // PARAMS
+            const params = {
+              'hapikey': this.form.hapiKey,
+              'subcategory': this.form.subcategory,
+              'is_draft': this.form.draft,
+              'limit': this.form.limit
+            }
+
+            // CLEAR OLD ERROR / OLD RESPONSE
+            this.error = [];
+            this.pages = [];
+
+            // MAKE THE BUTTON LOAD
+            this.isLoading = true
+
+            axios.get('https://api.hubapi.com/content/api/v2/pages', { params })
+              .then(res => {
+                this.pages = res.data.objects
+                this.isLoading = false
+              })
+              .catch(err => {
+                this.error = err.response.data
+                this.isLoading = false
+              })
+          }
+        }
+      });
+    </script>
   </body>
-
-  <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script>		
-    new Vue({
-      el: '#app',
-      methods: {
-        printJSON () {
-          // VARS
-          const key = this.form.hapiKey;
-          const draft = this.form.draft;
-          const subcategory = this.form.subcategory;
-          const limit = this.form.limit;
-
-          // REMOVE PREVIOUS PRINT
-          this.print = '';
-          
-          axios.post('https://hubprint-server-dwouyuqwzm.now.sh/printer', {
-              hapikey: key,
-              subcategory: subcategory,
-              draft: draft,
-              limit: limit
-            })
-            .then(function (response) {
-              console.log(response);
-            })
-            .catch(function (error) {
-              console.log(error);
-            });
-
-          // axios.post(``)
-          //   .then((res) => {
-          //     console.log(res);
-          //     // const payload = res.data.objects;
-          //     // for (let i = 0; i < payload.length; i++) {
-          //     //     const name = payload[i].name;
-          //     //     const campaign = payload[i].campaign_name;
-          //     //     const url = payload[i].url;
-          //     //     let template = payload[i].template_path;
-          //     //     
-          //     // 	this.print += `<div>${name}, ${campaign}, ${url}, ${template}</div>`
-          //     // }
-          //   })
-          //   .catch((error) => {
-          //     var err = error.response;
-          //     this.print = `${err.statusText} (${err.status}): ${err.data.message}`;
-          //   });
-        }
-      },
-      data: function () {
-        return {
-          form: {
-            hapiKey: '',
-            subcategory: 'site_page',
-            draft: false,
-            limit: 100
-          },
-          print: ''
-        }
-      }
-    });
-  </script>
 </html>
